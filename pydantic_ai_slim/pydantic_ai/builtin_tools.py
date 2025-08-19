@@ -103,3 +103,11 @@ class CodeExecutionTool(AbstractBuiltinTool):
     * OpenAI
     * Google
     """
+
+
+class UrlContextTool(AbstractBuiltinTool):
+    """Allows your agent to access the content of a URL.
+
+    Supported by:
+    * Google
+    """

@@ -63,6 +63,7 @@ try:
         GenerateContentConfigDict,
         GenerateContentResponse,
         GenerationConfigDict,
+        GroundingMetadata,
         GoogleSearchDict,
         HttpOptionsDict,
         MediaResolution,
@@ -437,6 +438,7 @@ class GoogleModel(Model):
             response.model_version or self._model_name,
             self._provider.name,
             usage,
+            grounding_metadata=candidate.grounding_metadata,
             vendor_id=vendor_id,
             vendor_details=vendor_details,
             finish_reason=finish_reason,
@@ -683,6 +685,7 @@ def _process_response_from_parts(
     provider_name: str,
     usage: usage.RequestUsage,
     vendor_id: str | None,
+    grounding_metadata: GroundingMetadata | None,
     vendor_details: dict[str, Any] | None = None,
     finish_reason: FinishReason | None = None,
 ) -> ModelResponse:
@@ -724,6 +727,13 @@ def _process_response_from_parts(
             )
 
         items.append(item)
+    if grounding_metadata:
+        items.append(BuiltinToolReturnPart(
+            provider_name=provider_name,
+            tool_name='grounding_metadata',
+            content=grounding_metadata,
+            tool_call_id='not_provided',
+            ))
     return ModelResponse(
         parts=items,
         model_name=model_name,
